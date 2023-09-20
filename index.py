@@ -1,26 +1,41 @@
+# %%
 
-#%% [markdown]
+# %% [markdown]
 # H1 Title
 
-#%% Start Metascripts
+# %% Start Metascripts
 import os
-!python -m pip install jupytext
+import subprocess
+# !python -m pip install jupytext
 
-file1 = os.path.basename(__file__)  # Replace with the path to your first file
-file2 = os.path.basename(__file__)[0] + '.ipynb'  # Replace with the path to your second file
-
-if os.path.getmtime(file1) > os.path.getmtime(file2):
-    print(f"{file1} is newer than {file2}")
-elif os.path.getmtime(file1) < os.path.getmtime(file2):
-    print(f"{file2} is newer than {file1}")
+if (".py" in os.path.basename(__file__)):
+    file1 = os.path.basename(__file__)  # Replace with the path to your first file
+    file2 = os.path.basename(__file__)[:-3] + '.ipynb'  # Replace with the path to your second file
 else:
-    print(f"{file1} and {file2} have the same modification time")
+    file2 = os.path.basename(__file__)[:-5]  # Replace with the path to your first file
+    file1 = os.path.basename(__file__) + '.py'  # Replace with the path to your second file
 
-command = f'python -m jupytext --to notebook {os.path.basename(__file__)}'
-turnout = f'!python -m jupytext --to notebook {os.path.basename(__file__)}'
+ipynb = False
+try:
+    if os.path.getmtime(file1) > os.path.getmtime(file2):
+        print(f"{file1} is newer than {file2}")
+    elif os.path.getmtime(file1) < os.path.getmtime(file2):
+        print(f"{file2} is newer than {file1}")
+        ipynb = True
+    else:
+        print(f"{file1} and {file2} have the same modification time")
+except:
+    pass     
+
+if (ipynb):
+    command =  f'python -m jupytext --to py:percent {file2}'
+else:   
+    command = f'python -m jupytext --to notebook {os.path.basename(__file__)}'
+subprocess.run(command, shell=True)
 
 
-#%% Importing Code
+
+# %% Importing Code
 import numpy as np
 import pandas as pd
 import torch
